@@ -70,21 +70,15 @@ namespace BasicOTP
 
         public static OtpKey FromUri(Uri uri)
         {
-            var ret = new OtpKey();
-
-            switch(uri.Authority.ToLowerInvariant())
+            var ret = new OtpKey
             {
-                case "totp":
-                    ret.AuthType = AuthTypes.TOTP;
-                        break;
-
-                case "hotp":
-                    ret.AuthType = AuthTypes.HOTP;
-                    break;
-
-                default:
-                    throw new Exception("Invalid uri:authority");
-            }
+                AuthType = uri.Authority.ToLowerInvariant() switch
+                {
+                    "totp" => AuthTypes.TOTP,
+                    "hotp" => AuthTypes.HOTP,
+                    _ => throw new Exception("Invalid uri:authority"),
+                }
+            };
 
             string label = HttpUtility.UrlDecode(uri.Segments[1]);
             if (label.Contains(":"))

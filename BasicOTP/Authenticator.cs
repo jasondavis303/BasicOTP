@@ -156,20 +156,13 @@ namespace BasicOTP
         
         private static HMAC GetHMAC(OtpKey otpKey, byte[] key)
         {
-            switch (otpKey.Algorithm)
+            return otpKey.Algorithm switch
             {
-                case Algorithms.SHA1:
-                    return new HMACSHA1(key);
-
-                case Algorithms.SHA256:
-                    return new HMACSHA256(key);
-
-                case Algorithms.SHA512:
-                    return new HMACSHA512(key);
-
-                default:
-                    throw new Exception("Unknown algorighm");
-            }
+                Algorithms.SHA1 => new HMACSHA1(key),
+                Algorithms.SHA256 => new HMACSHA256(key),
+                Algorithms.SHA512 => new HMACSHA512(key),
+                _ => throw new Exception("Unknown algorighm"),
+            };
         }
 
 
