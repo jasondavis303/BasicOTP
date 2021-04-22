@@ -156,7 +156,7 @@ namespace BasicOTP
             return ret;
         }
 
-        public static OtpKey FromImage(Image img)
+        public static OtpKey FromQR(Image img)
         {
             var decoder = new QRCodeDecoderLibrary.QRDecoder();
             using var bitmap = new Bitmap(img);
