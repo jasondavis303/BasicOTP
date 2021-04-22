@@ -3,6 +3,8 @@
  */
 
 using System;
+using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Web;
 
@@ -49,6 +51,16 @@ namespace BasicOTP
         }
 
         public Uri ToUri() => new Uri(ToString());
+
+        public Image ToQR()
+        {
+            var encoder = new QRCodeEncoderLibrary.QRCodeEncoder { ErrorCorrection = QRCodeEncoderLibrary.ErrorCorrection.H };
+            encoder.Encode(ToString());
+            using var ms = new MemoryStream();
+            encoder.SaveQRCodeToPngFile(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return Image.FromStream(ms);
+        }
 
 
         public static string GenerateRandomSecret(uint length = 32)
@@ -143,5 +155,17 @@ namespace BasicOTP
 
             return ret;
         }
+
+        public static OtpKey FromImage(Image img)
+        {
+            var decoder = new QRCodeDecoderLibrary.QRDecoder();
+            using var bitmap = new Bitmap(img);
+            var data = decoder.ImageDecoder(bitmap);
+
+            string uri = QRCodeDecoderLibrary.QRDecoder.ByteArrayToStr(data[0]);
+
+            return FromString(uri);
+        }
+    
     }
 }
