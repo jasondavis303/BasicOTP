@@ -51,6 +51,21 @@ namespace BasicOTP
         public Uri ToUri() => new Uri(ToString());
 
 
+        public static string GenerateRandomSecret(uint length = 32)
+        {
+            const string ALLOWED = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
+            if (length == 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var rand = new Random();
+            string ret = string.Empty;
+            for (uint i = 0; i < length; i++)
+                ret += ALLOWED[rand.Next(0, ALLOWED.Length)];  
+
+            return ret;
+        }
+        
         public static OtpKey FromString(string uri) => FromUri(new Uri(uri));
 
         public static OtpKey FromUri(Uri uri)
