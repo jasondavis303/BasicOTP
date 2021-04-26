@@ -20,6 +20,7 @@ namespace BasicOTP
         public uint Digits { get; set; } = 6;
         public ulong Counter { get; set; }
         public uint Period { get; set; } = 30;
+        public string Image { get; set; }
 
 
         public override string ToString()
@@ -47,6 +48,9 @@ namespace BasicOTP
             if (Period != 0 && Period != 30)
                 sb.AppendFormat("&period={0}", Period);
 
+            if (!string.IsNullOrWhiteSpace(Image))
+                sb.AppendFormat("&image={0}", HttpUtility.UrlEncode(Image));
+
             return sb.ToString();
         }
 
@@ -59,7 +63,7 @@ namespace BasicOTP
             using var ms = new MemoryStream();
             encoder.SaveQRCodeToPngFile(ms);
             ms.Seek(0, SeekOrigin.Begin);
-            return Image.FromStream(ms);
+            return System.Drawing.Image.FromStream(ms);
         }
 
 
@@ -145,6 +149,10 @@ namespace BasicOTP
                         if (!uint.TryParse(nvc[parmKey], out uint period))
                             throw new Exception("Invalid uri:period");
                         ret.Period = period;
+                        break;
+
+                    case "image":
+                        ret.Image = HttpUtility.UrlDecode(nvc[parmKey]);
                         break;
 
                     default:
